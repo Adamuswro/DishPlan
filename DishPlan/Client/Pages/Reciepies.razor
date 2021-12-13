@@ -3,38 +3,62 @@
 
 <h3>Reciepies</h3>
 
-<table class="table">
-    <thead>
-        <tr>
-            <td></td>
-            <td>Name</td>
-            <td>Show reciepie</td>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var reciepie in ReciepieService.Reciepies)
-        {
+<MudTable Items="@ReciepieService.Reciepies" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable" OnRowClick="ShowReciepie"
+          T="Reciepie">
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh>Name</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Picture">Pic placeholder</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@*<table class="table">
+        <thead>
             <tr>
-                <td>picture placeholder</td>
-                <td>@reciepie.Name</td>
-                <td>
-                    <button class="btn btn-primary" @onclick="@(()=>ShowReciepie(reciepie))">Show</button>
-                </td>
+                <td></td>
+                <td>Name</td>
+                <td>Show reciepie</td>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var reciepie in ReciepieService.Reciepies)
+            {
+                <tr>
+                    <td>picture placeholder</td>
+                    <td>@reciepie.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="@(()=>ShowReciepie(reciepie))">Show</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
 
 @code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    private MudTable<Reciepie> mudTable;
+
     protected override async Task OnInitializedAsync()
     {
         await ReciepieService.GetReciepies();
     }
 
-    public async Task ShowReciepie(Reciepie reciepie)
+    private void ShowReciepie(TableRowClickEventArgs<Reciepie> selectedRow)
     {
+        var ingredients = selectedRow.Item.Ingredients;
+        var reciepieText = selectedRow.Item.ReciepieText;
+        var reciepieName = selectedRow.Item.Name;
 
-        Console.WriteLine($"{reciepie.Name}. Ingredients: {String.Join(", ", reciepie.Ingredients)}");
+        var options = new ModalOptions { UseCustomLayout = true, ContentScrollable = true, DisableBackgroundCancel = false,Position=ModalPosition.Center,HideCloseButton=true };
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ReciepieModal.Ingredients), ingredients);
+        parameters.Add(nameof(ReciepieModal.ReciepieText), reciepieText);
+        Modal.Show<ReciepieModal>(reciepieName, parameters, options);
 
+        //Console.WriteLine(String.Join(", ", selectedRow.Item.Ingredients));
     }
 }

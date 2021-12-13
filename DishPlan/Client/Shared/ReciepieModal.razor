@@ -1,0 +1,39 @@
+﻿<div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-backdrop fade show" @onclick="Cancel"></div>
+    <div class="modal-dialog" style="z-index: 1050">
+        <!-- Pop it above the backdrop -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@BlazoredModal.Title</h5>
+                <button type="button" class="close" aria-label="Close" @onclick="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @foreach (var ingredient in Ingredients)
+                {
+                <div class="row">@ingredient</div>
+                }
+                </div>
+            <br />
+            <div class="modal-body">
+                <p>@ReciepieText</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Close">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter] public List<ReciepieIngredient> Ingredients { get; set; }
+    [Parameter] public string ReciepieText { get; set; }
+
+    void Close() => BlazoredModal.Close(ModalResult.Ok(true));
+    void Cancel() => BlazoredModal.Cancel();
+
+}
