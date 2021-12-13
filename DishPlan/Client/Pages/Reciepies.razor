@@ -1,0 +1,40 @@
+﻿@inject IReciepieService ReciepieService
+@page "/reciepies"
+
+<h3>Reciepies</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <td></td>
+            <td>Name</td>
+            <td>Show reciepie</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reciepie in ReciepieService.Reciepies)
+        {
+            <tr>
+                <td>picture placeholder</td>
+                <td>@reciepie.Name</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="@(()=>ShowReciepie(reciepie))">Show</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ReciepieService.GetReciepies();
+    }
+
+    public async Task ShowReciepie(Reciepie reciepie)
+    {
+
+        Console.WriteLine($"{reciepie.Name}. Ingredients: {String.Join(", ", reciepie.Ingredients)}");
+
+    }
+}
