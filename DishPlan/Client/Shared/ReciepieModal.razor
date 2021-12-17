@@ -32,7 +32,7 @@
 
     [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
 
-    [Parameter] public List<ReciepieIngredient> Ingredients { get; set; }
+    [Parameter] public List<ReciepieIngredientDTO> Ingredients { get; set; }
     [Parameter] public string ReciepieText { get; set; }
 
     void Close() => BlazoredModal.Close(ModalResult.Ok(true));

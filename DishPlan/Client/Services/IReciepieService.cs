@@ -6,7 +6,7 @@ namespace DishPlan.Client.Services
 {
     public interface IReciepieService
     {
-        List<Reciepie> Reciepies { get; set; }
+        List<ReciepieDTO> Reciepies { get; set; }
 
         Task GetReciepies();
     }

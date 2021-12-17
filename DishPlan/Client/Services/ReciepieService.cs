@@ -11,7 +11,7 @@ namespace DishPlan.Client.Services
     public class ReciepieService : IReciepieService
     {
         private readonly HttpClient http;
-        public List<Reciepie> Reciepies { get; set; } = new();
+        public List<ReciepieDTO> Reciepies { get; set; } = new();
         public ReciepieService(HttpClient http)
         {
             this.http = http;
@@ -19,7 +19,7 @@ namespace DishPlan.Client.Services
 
         public async Task GetReciepies()
         {
-            Reciepies = await http.GetFromJsonAsync<List<Reciepie>>("api/reciepies");
+            Reciepies = await http.GetFromJsonAsync<List<ReciepieDTO>>("api/reciepies");
         }
     }
 }

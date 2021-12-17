@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace DishPlan.Shared
 {
-    public class Ingredient
+    public class ReciepieDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        //public List<string> Keywords { get; set; }
+        public string ReciepieText { get; set; }
+        public List<ReciepieIngredientDTO> Ingredients { get; set; }
+        public string SourceLink { get; set; }
     }
 }

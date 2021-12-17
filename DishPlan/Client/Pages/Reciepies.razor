@@ -6,7 +6,7 @@
 <MudGrid Justify="Justify.Center">
     <MudItem md="12" xl="10">
         <MudTable Items="@ReciepieService.Reciepies" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable" OnRowClick="ShowReciepie"
-                  T="Reciepie" Loading="@isTableLoading">
+                  T="ReciepieDTO" Loading="@isTableLoading">
             <HeaderContent>
                 <MudTh></MudTh>
                 <MudTh>Name</MudTh>
@@ -22,7 +22,7 @@
 @code {
     [CascadingParameter] public IModalService Modal { get; set; }
 
-    private MudTable<Reciepie> mudTable;
+    private MudTable<ReciepieDTO> mudTable;
     private bool isTableLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -32,7 +32,7 @@
         isTableLoading = false;
     }
 
-    private void ShowReciepie(TableRowClickEventArgs<Reciepie> selectedRow)
+    private void ShowReciepie(TableRowClickEventArgs<ReciepieDTO> selectedRow)
     {
         var ingredients = selectedRow.Item.Ingredients;
         var reciepieText = selectedRow.Item.ReciepieText;
