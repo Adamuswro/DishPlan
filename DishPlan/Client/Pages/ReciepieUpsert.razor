@@ -2,12 +2,59 @@
 @page "/reciepie/edit/{id:int}"
 
 @inject IReciepieService ReciepieService
+@inject IIngredientService IngredientService
 
-<h3>ReciepieUpsert</h3>
+<h3>@Title</h3>
+
+<EditForm Model="ReciepieModel" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudTextField Label="Reciepie name" @bind-Value="ReciepieModel.Name" For="@(()=>ReciepieModel.Name)" />
+    <MudTextField Label="Reciepie text" @bind-Value="ReciepieModel.ReciepieText" For="@(()=>ReciepieModel.ReciepieText)" Lines="10" />
+
+    <MudAutocomplete Label="Ingredient name" @bind-Value="ReciepieModel.Ingredients[0].Ingredient.Name" CoerceValue="true" Immediate="true"
+                     ResetValueOnEmptyText="true" CloseIcon="Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SearchFunc="@GetIngredientsAsync" />
+
+</EditForm>
 
 @code {
     [Parameter]
     public int? Id { get; set; }
 
-    //private 
+    private ReciepieDTO ReciepieModel = new ReciepieDTO();
+    private string Title { get; set; } = "Create";
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (Id != null)
+        {
+            Title = "Edit";
+            ReciepieModel = ReciepieService.Reciepies.FirstOrDefault(r => r.Id == Id.Value);
+        }
+        else
+        {
+            await IngredientService.GetIngredientsAsync();
+            await ReciepieService.GetReciepiesAsync();
+            ReciepieModel.Ingredients = new List<ReciepieIngredientDTO>()
+        {
+                new ReciepieIngredientDTO {
+                    Ingredient = new IngredientDTO{Name="Papryka" }},
+                new ReciepieIngredientDTO{
+                    Ingredient = IngredientService.Ingredients.First()}
+            };
+        }
+    }
+
+    private async Task<IEnumerable<string>> GetIngredientsAsync(string value)
+    {
+        if (!IngredientService.Ingredients.Any())
+        {
+            await IngredientService.GetIngredientsAsync();
+        }
+        return IngredientService.Ingredients.Select(i => i.Name).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+
+    }
 }

@@ -28,7 +28,7 @@
     protected override async Task OnInitializedAsync()
     {
         isTableLoading = true;
-        await ReciepieService.GetReciepies();
+        await ReciepieService.GetReciepiesAsync();
         isTableLoading = false;
     }
 
