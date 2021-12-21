@@ -8,6 +8,6 @@ namespace DishPlan.Client.Services
     {
         List<ReciepieDTO> Reciepies { get; set; }
 
-        Task GetReciepies();
+        Task GetReciepiesAsync();
     }
 }

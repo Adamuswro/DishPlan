@@ -3,24 +3,59 @@
 
 @inject IReciepieService ReciepieService
 @inject IIngredientService IngredientService
+@inject IToastService ToastService
 
 <h3>@Title</h3>
 
 <EditForm Model="ReciepieModel" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
+    <ObjectGraphDataAnnotationsValidator />
     <MudTextField Label="Reciepie name" @bind-Value="ReciepieModel.Name" For="@(()=>ReciepieModel.Name)" />
     <MudTextField Label="Reciepie text" @bind-Value="ReciepieModel.ReciepieText" For="@(()=>ReciepieModel.ReciepieText)" Lines="10" />
 
-    <MudAutocomplete Label="Ingredient name" @bind-Value="ReciepieModel.Ingredients[0].Ingredient.Name" CoerceValue="true" Immediate="true"
-                     ResetValueOnEmptyText="true" CloseIcon="Icons.Material.Filled.Search" AdornmentColor="Color.Primary" SearchFunc="@GetIngredientsAsync" />
+    <MudContainer Class="mt-5" MaxWidth="MaxWidth.Medium">
+        <h4>Ingredients</h4>
+        <MudIconButton Class="mt-2" Size="Size.Medium" Title="Add ingredient" Icon="@Icons.Material.Rounded.Add" OnClick="()=>AddIngredient()" />
+        @foreach (var ingredientReciepie in ReciepieModel.Ingredients)
+        {
 
+            <MudGrid Class="my-0 ">
+                <MudItem Class="d-flex justify-center align-end pa-0" xs="1">
+                    <MudIconButton Class="" Size="Size.Medium" Icon="@Icons.Material.Filled.Delete" aria-label="delete" OnClick="()=>RemoveIngredient(ingredientReciepie)" />
+                </MudItem>
+                <MudItem Class="pa-1" xs="5" sm="4">
+                    <MudAutocomplete Class="text-justify" IconSize="Size.Small" @bind-Value="ingredientReciepie.Ingredient.Name" CoerceValue="true" Immediate="true" Required="true"
+                                     CloseIcon="@Icons.Material.Filled.Search" ResetValueOnEmptyText="true" AdornmentColor="@Color.Primary" SearchFunc="@GetIngredientsAsync" />
+                </MudItem>
+                <MudItem Class="pa-1" xs="3" sm="4">
+                    <MudNumericField Class="" IconSize="Size.Small" @bind-Value="ingredientReciepie.Amount" Required="true" Variant="Variant.Text" />
+                </MudItem>
+                <MudItem Class="pa-1" xs="3" sm="3">
+                    <MudSelect Class="" IconSize="Size.Small" @bind-Value="ingredientReciepie.AmountType">
+                        @foreach (AmountType type in Enum.GetValues(typeof(AmountType)))
+                            {
+                            <MudSelectItem Value="@type">@type</MudSelectItem>
+                            }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        }
+    </MudContainer>
+
+    <MudContainer Class="d-flex justify-space-around mt-5">
+        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send"  Size="Size.Medium" Color="Color.Primary">Save reciepie</MudButton>
+        <MudButton Size="Size.Large" Variant="Variant.Filled" EndIcon="@Icons.Material.Rounded.Refresh" Color="Color.Warning" OnClick="()=>LoadModel()">Reset</MudButton>
+
+    </MudContainer>
 </EditForm>
 
 @code {
     [Parameter]
     public int? Id { get; set; }
 
-    private ReciepieDTO ReciepieModel = new ReciepieDTO();
+    private ReciepieDTO ReciepieModel = new ReciepieDTO()
+    {
+        Ingredients = new()
+    };
     private string Title { get; set; } = "Create";
 
     protected async override Task OnInitializedAsync()
@@ -28,20 +63,38 @@
         if (Id != null)
         {
             Title = "Edit";
+        }
+
+        await LoadModel();
+    }
+
+    private async Task LoadModel()
+    {
+        await IngredientService.GetIngredientsAsync();
+        await ReciepieService.GetReciepiesAsync();
+        if (Id != null)
+        {
+            Title = "Edit";
             ReciepieModel = ReciepieService.Reciepies.FirstOrDefault(r => r.Id == Id.Value);
         }
         else
         {
-            await IngredientService.GetIngredientsAsync();
-            await ReciepieService.GetReciepiesAsync();
-            ReciepieModel.Ingredients = new List<ReciepieIngredientDTO>()
-        {
-                new ReciepieIngredientDTO {
-                    Ingredient = new IngredientDTO{Name="Papryka" }},
-                new ReciepieIngredientDTO{
-                    Ingredient = IngredientService.Ingredients.First()}
+            await AddIngredient();
+            ReciepieModel = new ReciepieDTO()
+            {
+                Ingredients = new()
             };
+            await AddIngredient();
         }
+    }
+
+    private async Task AddIngredient()
+    {
+        ReciepieModel.Ingredients.Add(
+            new ReciepieIngredientDTO
+            {
+                Ingredient = new()
+            });
     }
 
     private async Task<IEnumerable<string>> GetIngredientsAsync(string value)
@@ -50,11 +103,24 @@
         {
             await IngredientService.GetIngredientsAsync();
         }
-        return IngredientService.Ingredients.Select(i => i.Name).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var allWithoutAlreadySelected = IngredientService.Ingredients
+                                    .Where(i => !ReciepieModel.Ingredients
+                                        .Select(i => i.Ingredient.Name)
+                                        .Contains(i.Name));
+        var allNames = allWithoutAlreadySelected.Select(i => i.Name)
+                                    .ToList();
+        var matchingNames = allNames.Where(x => x.Contains(value ?? String.Empty, StringComparison.InvariantCultureIgnoreCase));
+        return await Task.FromResult(matchingNames);
+    }
+
+    async Task RemoveIngredient(ReciepieIngredientDTO ingredientToRemove)
+    {
+        await Task.FromResult(ReciepieModel.Ingredients.Remove(ingredientToRemove));
     }
 
     private void OnValidSubmit(EditContext context)
     {
-
+        ToastService.ShowSuccess("New reciepie created!");
     }
+
 }

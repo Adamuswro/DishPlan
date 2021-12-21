@@ -17,7 +17,7 @@ namespace DishPlan.Client.Services
             this.http = http;
         }
 
-        public async Task GetReciepies()
+        public async Task GetReciepiesAsync()
         {
             Reciepies = await http.GetFromJsonAsync<List<ReciepieDTO>>("api/reciepies");
         }

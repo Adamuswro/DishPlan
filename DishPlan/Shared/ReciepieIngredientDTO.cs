@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,11 @@ namespace DishPlan.Shared
     {
         public int Id { get; set; }
         public int IngredientId { get; set; }
+        [ValidateComplexType]
         public IngredientDTO Ingredient { get; set; }
         public int ReciepieId { get; set; }
-        public AmountType AmountType { get; set; }
+        [ValidateComplexType]
+        public AmountType AmountType { get; set; } = AmountType.Piece;
         public double Amount { get; set; }
 
         public override string ToString()
@@ -26,10 +29,10 @@ namespace DishPlan.Shared
         kg,
         ml,
         l,
-        spoon,
-        pinch,
-        piece,
-        slice,
-        plaster
+        Spoon,
+        Pinch,
+        Piece,
+        Slice,
+        Plaster
     }
 }
