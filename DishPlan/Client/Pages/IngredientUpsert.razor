@@ -7,7 +7,7 @@
 
 <h3>@Title</h3>
 
-<MudForm Model="IngredientModel" OnValidSubmit="OnValidSubmit" @ref="@form" Validation="@(ingredientValidator.ValidateAsync)">
+<MudForm Model="IngredientModel" OnValidSubmit="OnValidSubmit" )">
     <ObjectGraphDataAnnotationsValidator />
     <MudTextField Label="Ingredient name" @bind-Value="IngredientModel.Name" For="@(()=>IngredientModel.Name)" Immediate="true"/>
     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Save</MudButton>
@@ -43,12 +43,12 @@
 
     private async Task Submit()
     {
-        await form.Validate();
+        //await form.Validate();
 
-        if (form.IsValid)
-        {
-            IngredientService.
-        }
+        //if (form.IsValid)
+        //{
+        //    //IngredientService.
+        //}
     }
 
     private void OnValidSubmit(EditContext context)

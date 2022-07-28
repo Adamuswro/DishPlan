@@ -21,7 +21,8 @@ namespace DishPlan.Client.Services
         }
         public async Task<bool> CreateIngredientAsync(IngredientDTO ingredientDTO)
         {
-            await http.PostAsJsonAsync("api/ingredients/create", ingredientDTO);
+            var response = await http.PostAsJsonAsync("api/ingredients/create", ingredientDTO);
+            return response.IsSuccessStatusCode == true;
         }
     }
 }
