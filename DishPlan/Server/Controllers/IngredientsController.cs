@@ -41,5 +41,13 @@ namespace DishPlan.Server.Controllers
 
             return Ok(await context.Ingredients.ToListAsync());
         }
+
+        [HttpGet]
+        [Route("isUnique/{value}")]
+        public async Task<IActionResult> IsUniqe(string value)
+        {
+            var result = await context.Ingredients.AnyAsync(i => !i.Name.ToLower().Equals(value.ToLower()));
+            return Ok(result);
+        }
     }
 }

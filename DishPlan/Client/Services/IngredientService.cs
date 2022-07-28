@@ -19,5 +19,9 @@ namespace DishPlan.Client.Services
         {
             Ingredients = await http.GetFromJsonAsync<List<IngredientDTO>>("api/ingredients");
         }
+        public async Task<bool> CreateIngredientAsync(IngredientDTO ingredientDTO)
+        {
+            await http.PostAsJsonAsync("api/ingredients/create", ingredientDTO);
+        }
     }
 }

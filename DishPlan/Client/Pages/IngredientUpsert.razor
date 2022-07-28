@@ -1,0 +1,59 @@
+﻿@page "/ingredient/create"
+@page "/ingredient/edit/{id:int}"
+@using DishPlan.Shared.Validators
+
+@inject IIngredientService IngredientService
+@inject IToastService ToastService
+
+<h3>@Title</h3>
+
+<MudForm Model="IngredientModel" OnValidSubmit="OnValidSubmit" @ref="@form" Validation="@(ingredientValidator.ValidateAsync)">
+    <ObjectGraphDataAnnotationsValidator />
+    <MudTextField Label="Ingredient name" @bind-Value="IngredientModel.Name" For="@(()=>IngredientModel.Name)" Immediate="true"/>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Save</MudButton>
+</MudForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    private IngredientDTO IngredientModel = new IngredientDTO();
+    private IngredientValidator ingredientValidator = new IngredientValidator();
+    private string Title { get; set; } = "Create";
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (Id != null)
+        {
+            Title = "Edit";
+        }
+
+        await LoadModel();
+    }
+
+    private async Task LoadModel()
+    {
+        await IngredientService.GetIngredientsAsync();
+        if (Id != null)
+        {
+            Title = "Edit";
+            IngredientModel = IngredientService.Ingredients.FirstOrDefault(r => r.Id == Id.Value);
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            IngredientService.
+        }
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        ToastService.ShowSuccess("New ingredient created!");
+    }
+
+}
